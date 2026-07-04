@@ -1,0 +1,205 @@
+openapi: 3.0.0
+info:
+  title: Housing Rental API
+  version: 1.0.0
+  description: API для работы с предложениями, отзывами и пользователями
+servers:
+  - url: http://localhost:5000
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+
+paths:
+  /offer:
+    post:
+      summary: Создание нового предложения
+      tags: [Offers]
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                title: { type: string }
+                description: { type: string }
+                publishDate: { type: string, format: date }
+                city: { type: string }
+                isPremium: { type: boolean }
+                isFavorite: { type: boolean }
+                rating: { type: number }
+                type: { type: string }
+                rooms: { type: integer }
+                guests: { type: integer }
+                price: { type: number }
+                features: { type: string }
+                commentsCount: { type: integer }
+                latitude: { type: number }
+                longitude: { type: number }
+                userId: { type: integer }
+                previewImage: { type: string, format: binary }
+                photos:
+                  type: array
+                  items: { type: string, format: binary }
+      responses:
+        '201': { description: Предложение создано }
+        '400': { description: Ошибка валидации }
+
+  /offers:
+    get:
+      summary: Получить список всех предложений
+      tags: [Offers]
+      responses:
+        '200': { description: Успешный ответ со списком предложений }
+
+  /offers/{id}:
+    get:
+      summary: Получить полное предложение по ID
+      tags: [Offers]
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema: { type: integer }
+      responses:
+        '200': { description: Полная информация о предложении }
+        '400': { description: Предложение не найдено }
+
+  /offers/{id}/nearby:
+    get:
+      summary: Получить 3 соседних предложения
+      tags: [Offers]
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema: { type: integer }
+      responses:
+        '200': { description: Список ближайших предложений }
+
+  /favorite:
+    get:
+      summary: Получить избранные предложения
+      tags: [Offers]
+      responses:
+        '200': { description: Список избранных предложений }
+
+  /favorite/{offerId}/{status}:
+    post:
+      summary: Добавить или убрать предложение из избранного
+      tags: [Offers]
+      parameters:
+        - name: offerId
+          in: path
+          required: true
+          schema: { type: integer }
+        - name: status
+          in: path
+          required: true
+          schema: { type: integer, enum: [0, 1] }
+      security:
+        - bearerAuth: []
+      responses:
+        '200': { description: Статус избранного обновлен }
+
+  /comments/{offerId}:
+    get:
+      summary: Получить список отзывов по ID предложения
+      tags: [Reviews]
+      parameters:
+        - name: offerId
+          in: path
+          required: true
+          schema: { type: integer }
+      responses:
+        '200': { description: Список отзывов }
+
+    post:
+      summary: Добавить отзыв к предложению
+      tags: [Reviews]
+      parameters:
+        - name: offerId
+          in: path
+          required: true
+          schema: { type: integer }
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                comment: { type: string }
+                rating: { type: number }
+      responses:
+        '201': { description: Отзыв добавлен }
+        '400': { description: Ошибка добавления отзыва }
+
+  /comments/reviews:
+    get:
+      summary: Получить все отзывы
+      tags: [Reviews]
+      responses:
+        '200': { description: Список всех отзывов }
+
+  /register:
+    post:
+      summary: Регистрация пользователя
+      tags: [Users]
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                email: { type: string }
+                password: { type: string }
+                userType: { type: string }
+                username: { type: string }
+                avatar: { type: string, format: binary }
+      responses:
+        '200': { description: Успешная регистрация, возвращает токен }
+
+  /login:
+    post:
+      summary: Авторизация пользователя
+      tags: [Users]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                email: { type: string }
+                password: { type: string }
+      responses:
+        '200': { description: Успешный логин, возвращает токен }
+
+    get:
+      summary: Проверка токена пользователя
+      tags: [Users]
+      security:
+        - bearerAuth: []
+      responses:
+        '200': { description: Валидный токен, возвращает данные пользователя }
+
+  /logout:
+    delete:
+      summary: Выход пользователя
+      tags: [Users]
+      responses:
+        '204': { description: Пользователь вышел }
+
+tags:
+  - name: Offers
+  - name: Reviews
+  - name: Users

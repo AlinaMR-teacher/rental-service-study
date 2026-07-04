@@ -1,0 +1,12 @@
+node_modules
+dist
+.env
+.DS_Store
+coverage
+
+client/rent-service/node_modules
+client/rent-service/dist
+client/rent-service/.env
+
+server/node_modules
+server/.env
