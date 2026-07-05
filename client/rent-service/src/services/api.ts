@@ -16,7 +16,7 @@ const StatusCodeMapping: Record<number, boolean> = {
 
 const shouldDisplayError = (response: AxiosResponse) => !!StatusCodeMapping[response.status];
 
-
+//Api конфинурация
 const BACKEND_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000';;
 const REQUEST_TIMEOUT = 5000;
 
