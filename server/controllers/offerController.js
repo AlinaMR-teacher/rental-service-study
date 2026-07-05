@@ -18,6 +18,9 @@ const cityCoordinates = {
   Hamburg: { latitude: 53.5511, longitude: 9.9937, zoom: 13 },
   Dusseldorf: { latitude: 51.2277, longitude: 6.7735, zoom: 13 }
 };
+const getBaseUrl = () => (
+  process.env.PUBLIC_URL || `${process.env.HOST}:${process.env.PORT || 5000}`
+);
 
 export async function createOffer(req, res, next) {
   try {
@@ -96,7 +99,7 @@ export async function createOffer(req, res, next) {
 
 export async function getAllOffers(req, res, next) {
   const adaptOfferToClient = (offer) => {
-    const baseUrl = `${process.env.HOST}:${process.env.PORT || 5000}`;
+    const baseUrl = getBaseUrl();
     let previewImage = offer.previewImage;
     
     const cityLocation = cityCoordinates[offer.city];
@@ -134,7 +137,7 @@ export async function getAllOffers(req, res, next) {
 }
 
 const adaptFullOfferToClient = (offer, author) => {
-  const baseUrl = `${process.env.HOST}:${process.env.PORT || 5000}`;
+  const baseUrl = getBaseUrl();
   const cityLocation = cityCoordinates[offer.city];
   const prepareUrl = (url) => (url && !url.startsWith('http') ? `${baseUrl}${url.startsWith('/') ? '' : '/'}${url}` : url);
 
@@ -209,7 +212,7 @@ export async function getNearbyOffers(req, res, next) {
 
     // Используем адаптер из getAllOffers, чтобы отдать клиенту ожидаемый формат
     const adaptOfferToClient = (offer) => {
-      const baseUrl = `${process.env.HOST}:${process.env.PORT || 5000}`;
+      const baseUrl = getBaseUrl();
       let previewImage = offer.previewImage;
 
       if (previewImage && !previewImage.startsWith('http')) {
@@ -264,7 +267,7 @@ export const toggleFavorite = async (req, res, next) => {
 
 export const getFavoriteOffers = async (req, res, next) => {
   const adaptOfferToClient = (offer) => {
-    const baseUrl = `${process.env.HOST}:${process.env.PORT || 5000}`;
+    const baseUrl = getBaseUrl();
     let previewImage = offer.previewImage;
     
 
